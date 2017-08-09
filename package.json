@@ -1,0 +1,36 @@
+{
+  "name": "nofi",
+  "version": "1.0.0",
+  "description": "Reseau social",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mouss/nofi.git"
+  },
+  "keywords": [
+    "Nofi"
+  ],
+  "author": "Moussa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mouss/nofi/issues"
+  },
+  "homepage": "https://github.com/mouss/nofi#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "express-session": "^1.15.4",
+    "mongodb": "^2.2.30",
+    "nodemailer": "^4.0.1",
+    "nodemon": "^1.11.0",
+    "pug": "^2.0.0-rc.2",
+    "socket.io": "^2.0.3"
+  },
+  "engines": {
+    "node": "6.9.5"
+  }
+}

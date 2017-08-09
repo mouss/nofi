@@ -1,0 +1,20 @@
+.grid-x
+  .small-4.cell.center-block
+    h1.text-center Welcome to Nofi
+    form.validatedForm(method='POST')
+      .sign-in-form
+        p.label-notification= reponse
+        input#sign-in-form-username.sign-in-form-username(type='text', name='username', required='', placeholder='Login')
+        input#sign-in-form-username.sign-in-form-username(type='email', name='email', required='', placeholder='E-mail')
+        input#sign-in-form-username.sign-in-form-username(type='text', name='nom', required='', placeholder='Nom')
+        input#sign-in-form-username.sign-in-form-username(type='text', name='prenom', required='', placeholder='Prenom')
+        input#sign-in-form-username.sign-in-form-username(type='text', name='location', required='', placeholder='Location')
+        .large-6.columns
+          label Genre
+          input#homme(type='radio', name='genre', value='Homme', required='')
+          label(for='Homme') Homme
+          input#femme(type='radio', name='genre', value='Femme')
+          label(for='Femme') Femme
+        input#sign-in-form-password.sign-in-form-password(type='password', name='password' required='', placeholder='Mot de passe')
+        input#sign-in-form-password2.sign-in-form-password(type='password', name='password_confirm' required='', placeholder='Re-Mot de passe')
+        input.sign-in-form-button(type='submit', name='signup_submit', value='Valider')

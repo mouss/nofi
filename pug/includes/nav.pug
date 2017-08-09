@@ -1,0 +1,25 @@
+.top-bar-container(data-sticky-container='')
+  .sticky.sticky-topbar(data-sticky='', data-options='anchor: page; marginTop: 0; stickyOn: small;')
+    .top-bar
+      .top-bar-left
+        ul.dropdown.menu(data-dropdown-menu='')
+          li.menu-text NOFI
+          li.has-submenu
+            a(href='#') One
+            ul.submenu.menu.vertical(data-submenu='')
+              li
+                a(href='#') One
+              li
+                a(href='#') Two
+              li
+                a(href='#') Three
+          li
+            a(href='#') Two
+          li
+            a(href='#') Three
+      .top-bar-right
+        ul.menu
+          li
+            input(type='search', placeholder='Search')
+          li
+            button.button(type='button') Search
