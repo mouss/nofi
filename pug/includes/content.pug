@@ -3,13 +3,14 @@
   .small-4.cell.center-block
     h1.text-center Welcome to Nofi
     p.label-notification= reponse
-    form(method='POST')
+    form(method='POST' action='/accueil')
       .sign-in-form
         label(for='sign-in-form-username') Login
         input#sign-in-form-username.sign-in-form-username(type='text', name='username')
         label(for='sign-in-form-password') Mot de Passe
         input#sign-in-form-password.sign-in-form-password(type='password', name='password')
         button.sign-in-form-button(type='submit') Connexion
+        a(href='/lostpassword') Mot de passe oubliée ?
     p.text-center OU
     .sign-in-form
       a(href='/inscription')

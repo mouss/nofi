@@ -8,11 +8,11 @@
           img.user-image(src='http://placehold.it/200x200', alt='')
         // user info name, bio and location
         .card-user-bio
-          h4 User Name
-          p UX/UI ,Front-end developer, Foundation interested.
+          p#test {{ message }}
+          p #{ data.nom }, #{ data.prenom }
           span.location
             span.location-icon.fa.fa-map-marker
-            span.location-text Makkah Al-Mukaramah
+            span.location-text #{ data.location }
         // card's socail icons
         .card-user-social
           ul.menu
@@ -22,7 +22,7 @@
             li.fa.fa-github
         // card's follow button
         .card-user-button
-          a.hollow.button(href='#') FOLLOW
+          a.hollow.button(href='#') Suivre
     .cell.small-6 cell
       .status-update-input-box
         form

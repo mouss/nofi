@@ -1,6 +1,6 @@
 .top-bar-container(data-sticky-container='')
   .sticky.sticky-topbar(data-sticky='', data-options='anchor: page; marginTop: 0; stickyOn: small;')
-    .top-bar
+    .top-bar.grid-container.grid-container-padded
       .top-bar-left
         ul.dropdown.menu(data-dropdown-menu='')
           li.menu-text NOFI
@@ -16,10 +16,12 @@
           li
             a(href='#') Two
           li
-            a(href='#') Three
+            a(href='/logout') Déconnection
       .top-bar-right
-        ul.menu
-          li
-            input(type='search', placeholder='Search')
-          li
-            button.button(type='button') Search
+        form(method="POST" action="/search")
+          ul.menu
+            li
+              input(type='search', name='search' id='search' placeholder='Search')
+            li
+              input(type='submit', class='button', value='Search')
+          .resultat

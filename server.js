@@ -20,8 +20,20 @@ var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var session = require('express-session');
 var bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
-var userPseudo;
-
+var expressVue = require('express-vue');
+const io = require('socket.io');
+const path = require('path');
+var generator = require('generate-password');
+var userPseudo={};
+const vueOptions = {
+    rootPath: path.join(__dirname, '/vu'),
+    layout: {
+        start: '<div id="app">',
+        end: '</div>'
+    }
+};
+const expressVueMiddleware = expressVue.init(vueOptions);
+app.use(expressVueMiddleware);
 
 app.use("/pug", express.static(__dirname + '/pug'));
 app.set('view engine', 'pug')
@@ -69,14 +81,15 @@ MongoClient.connect(URL, function(err, db) {
   });
 
   //Authentification
-  app.post('/', function(req,res){
+  app.post('/accueil', function(req,res){
     var collection = maDB.collection('utilisateurs');
     collection.find({ username: req.body.username }).toArray(function(err, data){
       if(data == ''){
         res.render('index', {reponse:'Login invalide'});
       } else if( bcrypt.compareSync(req.body.password, data[0].password)){
         req.session.username = data[0].username;
-        res.render('accueil');
+        userPseudo = data[0];
+        res.render('accueil',{data:data[0]});
       }else {
         res.render('index', {reponse:'Mot de passe invalide'});
       }
@@ -93,40 +106,48 @@ MongoClient.connect(URL, function(err, db) {
     var collection = maDB.collection('utilisateurs');
     collection.find({ username: req.body.username }).toArray(function(err, data){
         if(data == ''){
-          if(req.body.password == req.body.password_confirm){
-            // insertion du new User
-            var hash = bcrypt.hashSync(req.body.password_confirm, 10);
-            var collection = maDB.collection('utilisateurs');
-            collection.insert({
-              username: req.body.username,
-              email: req.body.email,
-              nom: req.body.nom,
-              prenom: req.body.prenom,
-              location: req.body.location,
-              genre: req.body.genre,
-              password: hash,
-              niveau:'membre' })
-            res.render('index', {reponse:'L\'inscription est réussi veuillez vous connectez'});
-            // setup email data with unicode symbols
-            let mailOptions = {
-                from: '"Nofi" <contact@nofi.com>', // sender address
-                to: req.body.email, // list of receivers
-                subject: 'Inscription✔', // Subject line
-                text: 'L\'inscription est réussi ', // plain text body
-                html: '<b>L\'inscription est réussi </b>' // html body
-            };
+          collection.find({ email: req.body.email }).toArray(function(err, data){
+            if(data == ''){
+              if(req.body.password == req.body.password_confirm){
+                // insertion du new User
+                var hash = bcrypt.hashSync(req.body.password_confirm, 10);
+                var collection = maDB.collection('utilisateurs');
+                collection.insert({
+                  username: req.body.username,
+                  email: req.body.email,
+                  nom: req.body.nom,
+                  prenom: req.body.prenom,
+                  location: req.body.location,
+                  genre: req.body.genre,
+                  password: hash,
+                  niveau:'membre' })
+                res.render('index', {reponse:'L\'inscription est réussi veuillez vous connectez'});
+                // setup email data with unicode symbols
+                let mailOptions = {
+                    from: '"Nofi" <contact@nofi.com>', // sender address
+                    to: req.body.email, // list of receivers
+                    subject: 'Inscription✔', // Subject line
+                    text: 'L\'inscription est réussi ', // plain text body
+                    html: '<b>L\'inscription est réussi </b>' // html body
+                };
 
-            // send mail with defined transport object
-            transporter.sendMail(mailOptions, (error, info) => {
-                if (error) {
-                    return console.log(error);
-                }
-                console.log('Message %s sent: %s', info.messageId, info.response);
-            });
-          }else{
-            //Retour page inscription
-            res.render('inscription', {reponse:'Le mot de passe n\'est pas le même'});
-          }
+                // send mail with defined transport object
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        return console.log(error);
+                    }
+                    console.log('Message %s sent: %s', info.messageId, info.response);
+                });
+              }else{
+                //Retour page inscription
+                res.render('inscription', {reponse:'Le mot de passe n\'est pas le même'});
+              }
+            }else{
+              //Retour page inscription
+              res.render('inscription', {reponse:'L\'email existe déjà'})
+            }
+          });
+
         }else {
           //Retour page inscription
           res.render('inscription', {reponse:'Le login existe déjà'});
@@ -135,13 +156,73 @@ MongoClient.connect(URL, function(err, db) {
   });
 
   app.get('/accueil', function(req,res){
-    res.render('accueil');
+    if(req.session.username){
+      res.render('accueil');
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
   });
 
-  //Page 404
-  app.use(function(req, res, next) {
-    res.status(404).render('404');
+  app.get('/logout',function(req,res){
+    req.session.destroy(function(err) {
+      if(err) {
+        console.log(err);
+      } else {
+        res.redirect('/');
+      }
+    });
   });
+
+  app.get('/lostpassword',function(req,res){
+    res.render('lostpassword');
+  });
+
+  app.post('/lostpassword', function(req,res){
+    var collection = maDB.collection('utilisateurs');
+    collection.find({ email: req.body.email }).toArray(function(err, data){
+      if(data == ''){
+        res.render('lostpassword', {reponse:'L\'adresse e-mail n\'est pas valide'})
+      }else{
+        var password = generator.generate({
+          length: 10,
+          numbers: true
+        });
+        var hash = bcrypt.hashSync(password, 10);
+        collection.update({email: data[0].email },{$set:{ password: hash } })
+        let mailOptions = {
+            from: '"Nofi" <contact@nofi.com>', // sender address
+            to: req.body.email, // list of receivers
+            subject: 'Mot de passe oubliée', // Subject line
+            text: 'Bonjour'+ data[0].prenom +', Voici votre nouveau mot de passe:'+ password,
+            html: 'Bonjour '+ data[0].prenom +',<br/>Voici votre nouveau mot de passe:<br/>'+ password // html body
+        };
+
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message %s sent: %s', info.messageId, info.response);
+        });
+        res.render('index', {reponse:'Un e-mail avec votre nouveau mot de passe à etait envoyé'})
+      }
+    });
+  });
+
+  app.post('/search', function(req,res){
+    var collection = maDB.collection('utilisateurs');
+    collection.createIndex({ "username": "text" })
+    collection.find({$text: { $search: req.body.search }}).toArray(function(err, data){
+      if(data == ''){
+        console.log('puni')
+        res.render('accueil');
+      }else{
+        console.log(data)
+        res.render('accueil');
+      }
+    });
+  });
+
 
   // POST /api/users gets JSON bodies
   app.post('/api/users', jsonParser, function (req, res) {
@@ -149,34 +230,25 @@ MongoClient.connect(URL, function(err, db) {
     // create user in req.body
   });
 
-
-
-  // Chargement de socket.io
-  const io = require('socket.io');
-
-  //  On utilise utilise la fonction obtenue avec notre serveur HTTP.
   var ioServer = io(server);
-
-  /**
-    Gestion de l'évènement 'connection' : correspond à la gestion
-    d'une requête WebSocket provenant d'un client WebSocket.
-  **/
   ioServer.on('connection', function (socket) {
 
-    // socket : Est un objet qui représente la connexion WebSocket établie entre le client WebSocket et le serveur WebSocket.
-
-    /**
-      On attache un gestionnaire d'évènement à un évènement personnalisé 'unEvenement'
-      qui correspond à un événement déclaré coté client qui est déclenché lorsqu'un message
-      a été reçu en provenance du client WebSocket.
-    **/
+    var user = {
+      username:userPseudo.username,
+      prenom:userPseudo.prenom,
+      nom:userPseudo.nom,
+      location: userPseudo.location,
+      genre: userPseudo.genre,
+      niveau:userPseudo.niveau
+    };
     socket.on('unEvenement', function (message) {
+
 
       // Affichage du message reçu dans la console.
       console.log(message);
 
       // Envoi d'un message au client WebSocket.
-      socket.emit('unAutreEvenement', {texte: 'Message bien reçu !'});
+      socket.emit('unAutreEvenement', {user});
       /**
         On déclare un évènement personnalisé 'unAutreEvenement'
         dont la réception sera gérée coté client.
@@ -184,6 +256,11 @@ MongoClient.connect(URL, function(err, db) {
 
     });
 
+
+  });
+  //Page 404
+  app.use(function(req, res, next) {
+    res.status(404).render('404');
   });
 
 });

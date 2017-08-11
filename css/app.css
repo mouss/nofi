@@ -73,7 +73,9 @@
 .sticky-topbar {
   width: 100%;
 }
-
+.top-bar-container{
+  background-color: #e6e6e6;
+}
 /* Accueil */
 
 .mega-menu .dropdown-pane {

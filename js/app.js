@@ -9,3 +9,9 @@ $('input').blur(function () {
        $('#sign-in-form-password2').removeClass().addClass('form-succes');
    }
 });
+var app = new Vue({
+  el: '#test',
+  data: {
+    message: 'Hello Vue !'
+  }
+});
