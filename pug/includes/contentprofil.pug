@@ -1,0 +1,21 @@
+.grid-x
+  .small-4.cell.center-block
+    h1.text-center Profil
+    form.validatedForm(method='POST' action='/profil', enctype='multipart/form-data')
+      .sign-in-form
+        p.label-notification= reponse
+        input#sign-in-form-username.sign-in-form-username(type='text', name='nom', required='', value= nom)
+        input#sign-in-form-username.sign-in-form-username(type='text', name='prenom', required='', value= prenom)
+        input#sign-in-form-username.sign-in-form-username(type='text', name='location', required='', value= location)
+        label.button(for='photoDeProfil') Upload File
+        input#photoDeProfil.show-for-sr(type='file', name='photodeprofil')
+        .card-user-container
+          .card-user-avatar
+            if photodeprofil
+              img.user-image(src= photodeprofil.path, alt= username)
+            else
+              img.user-image(src='http://placehold.it/200x200', alt='')
+        label
+          | Présentation
+          textarea(rows="5" name="presentation")= presentation
+        input.success.button.expanded(type='submit', name='signup_submit', value='Valider')

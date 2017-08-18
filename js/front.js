@@ -11,7 +11,16 @@
       console.log(data);
     });
     socket.on('unAutreEvenement', function(data){
-      console.log(data);
+      var app = new Vue({
+        el: '#user',
+        data: {
+          nom: data.user.nom,
+          prenom: data.user.prenom,
+          location: data.user.location,
+          photodeprofil: data.user.photodeprofil
+        }
+      });
+
     });
   });
 })(window, io);

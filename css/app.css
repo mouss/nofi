@@ -106,7 +106,7 @@
 /* USER Profil */
 .card-user-container {
   margin-bottom: 1rem;
-  background-color: #fefefe;
+  /*background-color: #fefefe;*/
   color: #0a0a0a;
   overflow: hidden;
   padding: 0;
@@ -271,3 +271,14 @@
     margin-bottom: 0.25rem;
   }
 }
+/* PHOTOS */
+.thumbnail{
+  height: 150px;
+  margin: 10px;
+}
+img {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 100%;
+    max-height: 100%;
+  }

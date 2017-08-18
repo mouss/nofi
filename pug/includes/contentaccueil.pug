@@ -1,18 +1,19 @@
 // Page Content
-.grid-container.grid-container-padded
+.grid-container.grid-container-padded#user
   .grid-x.grid-padding-x
     .cell.small-3 cell
       .card-user-container
         // card's image
-        .card-user-avatar
+        .card-user-avatar(v-if='photodeprofil')
+          img.user-image(v-bind:src='photodeprofil.path')
+        .card-user-avatar(v-else)
           img.user-image(src='http://placehold.it/200x200', alt='')
         // user info name, bio and location
         .card-user-bio
-          p#test {{ message }}
-          p #{ data.nom }, #{ data.prenom }
+          p {{ nom }}, {{ prenom }}
           span.location
             span.location-icon.fa.fa-map-marker
-            span.location-text #{ data.location }
+            span.location-text {{ location }}
         // card's socail icons
         .card-user-social
           ul.menu

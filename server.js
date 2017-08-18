@@ -24,6 +24,7 @@ var expressVue = require('express-vue');
 const io = require('socket.io');
 const path = require('path');
 var generator = require('generate-password');
+var multer  = require('multer');
 var userPseudo={};
 const vueOptions = {
     rootPath: path.join(__dirname, '/vu'),
@@ -41,6 +42,7 @@ app.set('views','pug');
 app.use("/img", express.static(__dirname + '/img'));
 app.use("/css", express.static(__dirname + '/css'));
 app.use("/js", express.static(__dirname + '/js'));
+app.use("/uploads", express.static(__dirname + '/uploads'));
 
 app.use(urlencodedParser);
 app.use(session({
@@ -74,6 +76,20 @@ MongoClient.connect(URL, function(err, db) {
   var server = app.listen(8080, function() {
     console.log( 'Server listening on port 8080 ');
   });
+
+  //Upload Fichier
+  var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './uploads')
+  },
+    filename: function (req, file, cb) {
+      let extArray = file.mimetype.split("/");
+      let extension = extArray[extArray.length - 1];
+      cb(null, file.fieldname + '-' + Date.now()+ '.' +extension)
+    }
+  });
+
+  var upload = multer({ storage: storage });
 
   //Page d'accueil
   app.get('/', function(req,res){
@@ -163,6 +179,32 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  app.get('/photos', function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('medias');
+      collection.find({ username: req.session.username }).toArray(function(err, data){
+        if(data == ''){
+          res.render('photos', {reponse:'Pas de photos'});
+        }else{
+          data.forEach(function(element) {
+            res.render('photos', {data:element.fichier.gallery});
+          });
+        }
+      });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  var cpUpload = upload.fields([{ name: 'avatar', maxCount: 1 }, { name: 'gallery', maxCount: 8 }])
+  app.post('/photos', cpUpload, function(req,res){
+    if (!req.body) return res.sendStatus(400)
+    var collection = maDB.collection('medias');
+    var date = new Date();
+    collection.insert({username: req.session.username, fichier: req.files, type : 'photo', date : date})
+      res.redirect('/photos')
+  });
+
   app.get('/logout',function(req,res){
     req.session.destroy(function(err) {
       if(err) {
@@ -218,11 +260,32 @@ MongoClient.connect(URL, function(err, db) {
         res.render('accueil');
       }else{
         console.log(data)
-        res.render('accueil');
+        data.sort()
+        res.json({resu:data})
       }
     });
   });
 
+  app.get('/profil' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('utilisateurs');
+      collection.find({ username: req.session.username }).toArray(function(err, data){
+        res.render('profil',{nom:data[0].nom, username:data[0].username, prenom:data[0].prenom, location:data[0].location, presentation:data[0].presentation, photodeprofil:data[0].photodeprofil});
+      });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  app.post('/profil', upload.single('photodeprofil'),function(req,res){
+      if (!req.body) return res.sendStatus(400)
+      var collection = maDB.collection('utilisateurs');
+      collection.update(
+        {username: req.session.username},
+        {$set:{ nom:req.body.nom, prenom:req.body.prenom, location:req.body.location, presentation:req.body.presentation, photodeprofil:req.file }
+      });
+      res.redirect('/profil')
+  });
 
   // POST /api/users gets JSON bodies
   app.post('/api/users', jsonParser, function (req, res) {
@@ -239,7 +302,8 @@ MongoClient.connect(URL, function(err, db) {
       nom:userPseudo.nom,
       location: userPseudo.location,
       genre: userPseudo.genre,
-      niveau:userPseudo.niveau
+      niveau:userPseudo.niveau,
+      photodeprofil:userPseudo.photodeprofil
     };
     socket.on('unEvenement', function (message) {
 
