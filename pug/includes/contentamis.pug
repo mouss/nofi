@@ -4,9 +4,6 @@
     .cell.small-3 cell
       include contentsidebar.pug
     .cell.small-9 cell
-      form(method='POST', action='/photos', enctype='multipart/form-data')
-        input(type='file', name='gallery', multiple)
-        input(type='submit', value='envoyer')
       if data
         each image in data
           a.thumbnail(href='#', data-featherlight= image.path)

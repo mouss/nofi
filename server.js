@@ -171,6 +171,7 @@ MongoClient.connect(URL, function(err, db) {
     });
   });
 
+  //Page d'accueil
   app.get('/accueil', function(req,res){
     if(req.session.username){
       res.render('accueil');
@@ -179,6 +180,7 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  //Page mes photos
   app.get('/photos', function(req,res){
     if(req.session.username){
       var collection = maDB.collection('medias');
@@ -284,7 +286,38 @@ MongoClient.connect(URL, function(err, db) {
         {username: req.session.username},
         {$set:{ nom:req.body.nom, prenom:req.body.prenom, location:req.body.location, presentation:req.body.presentation, photodeprofil:req.file }
       });
+      userPseudo.nom = req.body.nom;
+      userPseudo.prenom = req.body.prenom;
+      userPseudo.location = req.body.location;
+      userPseudo.presentation = req.body.presentation;
+      userPseudo.photodeprofil = req.file
       res.redirect('/profil')
+  });
+
+  app.get('/listeamis' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('amis');
+      collection.find({ username: req.session.username, status: 3 }).toArray(function(err, data){
+        if(data == ''){
+          res.render('amis', {reponse:'Vous n\'avez pas d\'amis dans votre liste'});
+        }else {
+          res.render('amis', {data:data});
+        }
+      });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  app.get('/ajoutamis' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('utilisateurs');
+      collection.find({ }).toArray(function(err, data){  
+          res.render('ajoutamis', {data:data});
+      });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
   });
 
   // POST /api/users gets JSON bodies

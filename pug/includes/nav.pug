@@ -8,21 +8,19 @@
             a(href='#') One
             ul.submenu.menu.vertical(data-submenu='')
               li
-                a(href='#') One
+                a(href='/accueil') Accueil
               li
-                a(href='#') Two
+                a(href='/profil') Mon profil
               li
-                a(href='#') Three
+                a(href='/photos') Mes photos
+              li
+                a(href='/listeamis') Mes amis
+              li
+                a(href='/logout') Déconnection
           li
-            a(href='/accueil') Accueil
+            a(href='/ajoutamis') Ajout amis
           li
             a(href='/profil') Mon profil
-          li
-            a(href='/photos') Mes photos
-          li
-            a(href='/amis') Mes amis
-          li
-            a(href='/logout') Déconnection
       .top-bar-right
         form(method="POST" action="/search")
           ul.menu

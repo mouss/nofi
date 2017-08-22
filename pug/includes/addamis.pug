@@ -1,0 +1,31 @@
+// Page Content
+.grid-container.grid-container-padded#user
+  .grid-x.grid-padding-x
+    .cell.small-3 cell
+      include contentsidebar.pug
+    .cell.small-9 cell
+      .people-you-might-know
+        .add-people-header
+          h6.header-title
+            | Ajouter de nouveaux amis
+        each ami in data
+          .row.add-people-section.grid-x
+            .small-12.medium-6.columns.about-people.cell
+              .about-people-avatar
+                if ami.photodeprofil
+                  img.avatar-image(src= ami.photodeprofil.path, alt= ami.username)
+                else
+                  img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+              .about-people-author
+                p.author-name= ami.username
+                p.author-location
+                  i.fa.fa-map-marker(aria-hidden='true')
+                  span= ami.location
+            .small-12.medium-6.columns.add-friend
+              .add-friend-action
+                button.button.primary.small
+                  i.fa.fa-user-plus(aria-hidden='true')
+                  |           Add Friend
+                button.button.secondary.small
+                  i.fa.fa-user-times(aria-hidden='true')
+                  |           Ignore
