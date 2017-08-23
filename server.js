@@ -237,7 +237,7 @@ MongoClient.connect(URL, function(err, db) {
             from: '"Nofi" <contact@nofi.com>', // sender address
             to: req.body.email, // list of receivers
             subject: 'Mot de passe oubliée', // Subject line
-            text: 'Bonjour'+ data[0].prenom +', Voici votre nouveau mot de passe:'+ password,
+            text: 'Bonjour '+ data[0].prenom +', Voici votre nouveau mot de passe:'+ password,
             html: 'Bonjour '+ data[0].prenom +',<br/>Voici votre nouveau mot de passe:<br/>'+ password // html body
         };
 
@@ -301,7 +301,6 @@ MongoClient.connect(URL, function(err, db) {
         if(data == ''){
           res.render('amis', {reponse:'Vous n\'avez pas d\'amis dans votre liste'});
         }else {
-          console.log(data)
           res.render('amis', {data:data});
         }
       });
@@ -336,8 +335,21 @@ MongoClient.connect(URL, function(err, db) {
     if(req.session.username){
       amis.insert({username: req.session.username, ami: req.params.username, status: 1})
       collection.find({ username: req.params.username }).toArray(function(err, data){
-        //console.log(data[0]);
-
+        console.log(data[0]);
+        let mailOptions = {
+            from: '"Nofi" <contact@nofi.com>', // sender address
+            to: data[0].email, // list of receivers
+            subject: 'Un nouvel ami ?', // Subject line
+            text: 'Bonjour '+ data[0].prenom +', L\'utilisateurs '+ req.params.username +' veut être votre amis sur Nofi' ,
+            html: 'Bonjour '+ data[0].prenom +',<br/> L\'utilisateurs'+ req.params.username +'veut être votre amis sur Nofi'
+        };
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message %s sent: %s', info.messageId, info.response);
+        });
       });
       res.redirect('/ajoutamis');
     }else{
