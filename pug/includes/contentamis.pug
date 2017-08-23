@@ -5,8 +5,7 @@
       include contentsidebar.pug
     .cell.small-9 cell
       if data
-        each image in data
-          a.thumbnail(href='#', data-featherlight= image.path)
-            img(src= image.path)
+        each i in data
+          p= i.ami
       else
-       p.label-notification= reponse
+       p pas d'amis

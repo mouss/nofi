@@ -3,11 +3,12 @@
   .grid-x.grid-padding-x
     .cell.small-3 cell
       include contentsidebar.pug
-    .cell.small-9 cell
+    .cell.small-9
       .people-you-might-know
         .add-people-header
           h6.header-title
             | Ajouter de nouveaux amis
+            p.label-notification= reponse
         each ami in data
           .row.add-people-section.grid-x
             .small-12.medium-6.columns.about-people.cell
@@ -23,9 +24,7 @@
                   span= ami.location
             .small-12.medium-6.columns.add-friend
               .add-friend-action
-                button.button.primary.small
-                  i.fa.fa-user-plus(aria-hidden='true')
-                  |           Add Friend
-                button.button.secondary.small
-                  i.fa.fa-user-times(aria-hidden='true')
-                  |           Ignore
+                a(href= '/ajoutamis/'+ami.username)
+                  button.button.primary.small
+                    i.fa.fa-user-plus(aria-hidden='true')
+                    |           Ajouter un ami

@@ -1,0 +1,10 @@
+db.collection('utilisateurs').aggregate([
+    { $lookup:
+       {
+         from: 'amis',
+         localField: 'username',
+         foreignField: 'username',
+         as: 'mesamis'
+       }
+     }
+    ])

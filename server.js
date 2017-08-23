@@ -297,10 +297,11 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/listeamis' ,function(req,res){
     if(req.session.username){
       var collection = maDB.collection('amis');
-      collection.find({ username: req.session.username, status: 3 }).toArray(function(err, data){
+      collection.find({ username: req.session.username}).toArray(function(err, data){
         if(data == ''){
           res.render('amis', {reponse:'Vous n\'avez pas d\'amis dans votre liste'});
         }else {
+          console.log(data)
           res.render('amis', {data:data});
         }
       });
@@ -311,13 +312,38 @@ MongoClient.connect(URL, function(err, db) {
 
   app.get('/ajoutamis' ,function(req,res){
     if(req.session.username){
+      var mesamis = [req.session.username]
       var collection = maDB.collection('utilisateurs');
-      collection.find({ }).toArray(function(err, data){  
-          res.render('ajoutamis', {data:data});
+      var amis = maDB.collection('amis');
+      amis.find({ username:req.session.username }).toArray(function(err, data){
+        data.forEach(function(element) {
+          mesamis.push(element.ami);
+        });
+        collection.find({ username: { $nin:mesamis } }).toArray(function(err, data){
+            res.render('ajoutamis', {data:data});
+        });
+
       });
+
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
+  });
+
+  app.get('/ajoutamis/:username' ,function(req,res){
+    var collection = maDB.collection('utilisateurs');
+    var amis = maDB.collection('amis');
+    if(req.session.username){
+      amis.insert({username: req.session.username, ami: req.params.username, status: 1})
+      collection.find({ username: req.params.username }).toArray(function(err, data){
+        //console.log(data[0]);
+
+      });
+      res.redirect('/ajoutamis');
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+
   });
 
   // POST /api/users gets JSON bodies
