@@ -3,9 +3,74 @@
   .grid-x.grid-padding-x
     .cell.small-3 cell
       include contentsidebar.pug
-    .cell.small-9 cell
-      if data
-        each i in data
-          p= i.ami
-      else
-       p pas d'amis
+    .cell.small-9
+      .people-you-might-know
+        h2.header-title
+          | Invitation en cours
+        if data
+          each ami in data
+            if ami.status == 1
+              .row.add-people-section.grid-x
+                .small-12.medium-6.columns.about-people.cell
+                  .about-people-avatar
+                    if ami.infoami[0]
+                      img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
+                    else
+                      img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                  .about-people-author
+                    p.author-name= ami.infoami[0].username
+                    p.author-location
+                      i.fa.fa-map-marker(aria-hidden='true')
+                      span= ami.infoami[0].location
+                .small-12.medium-6.columns.add-friend
+                  .label.warning
+                    p Invitation en cours
+            else if ami.status == 2
+              .row.add-people-section.grid-x
+                .small-12.medium-12.columns.about-people.cell
+                  .about-people-avatar
+                    if ami.photodeprofil
+                      img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
+                    else
+                      img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                  .about-people-author
+                    p.author-name= ami.infoami[0].username
+                    p.author-location
+                      i.fa.fa-map-marker(aria-hidden='true')
+                      span= ami.infoami[0].location
+        else
+         p.label-notification Pas d'amis dans votre liste
+      .people-you-might-know
+        h2.header-title
+          | En attente de confirmation
+        if demandeur
+          each ami in demandeur
+            if ami.username != usernamesession
+              if ami.status == 1
+                .row.add-people-section.grid-x
+                  .small-12.medium-4.columns.about-people.cell
+                    .about-people-avatar
+                      if ami.demandeur[0].photodeprofil
+                        img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
+                      else
+                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                    .about-people-author
+                      p.author-name= ami.demandeur[0].username
+                      p.author-location
+                        i.fa.fa-map-marker(aria-hidden='true')
+                        span= ami.demandeur[0].location
+                  .small-12.medium-4.columns.add-friend
+                    .label.warning
+                      p En attente de confirmation
+                  .small-12.medium-4.columns.add-friend
+                    .add-friend-action
+                      a(href= '/validerami/'+ami.demandeur[0].username)
+                        button.button.primary.small
+                          i.fa.fa-user-plus(aria-hidden='true')
+                          |           Valider
+                      a(href= '/ignorerami/'+ami.demandeur[0].username)
+                        button.button.secondary.small
+                          i.fa.fa-user-times(aria-hidden='true')
+                          |           Ignorer
+        else
+         p.label-notification Pas d'amis dans votre liste

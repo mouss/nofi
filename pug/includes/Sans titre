@@ -8,3 +8,30 @@ db.collection('utilisateurs').aggregate([
        }
      }
     ])
+
+    db.utilisateurs.aggregate([
+        { $lookup:
+           {
+             from: 'amis',
+             localField: 'username',
+             foreignField: 'username',
+             as: 'mesamis'
+           }
+         }
+        ]).pretty()
+    db.amis.aggregate([
+        { $match : { username : "mousszy" } },
+        { $lookup:
+           {
+             from: 'utilisateurs',
+             localField: 'ami',
+             foreignField: 'username',
+             as: 'infoami'
+           }
+         }
+        ]).pretty()
+
+        data.forEach(function(element) {
+          console.log(element)
+          mesamis.push(element)
+        });

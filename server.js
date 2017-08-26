@@ -297,13 +297,31 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/listeamis' ,function(req,res){
     if(req.session.username){
       var collection = maDB.collection('amis');
-      collection.find({ username: req.session.username}).toArray(function(err, data){
-        if(data == ''){
-          res.render('amis', {reponse:'Vous n\'avez pas d\'amis dans votre liste'});
-        }else {
-          res.render('amis', {data:data});
-        }
-      });
+      collection.aggregate([
+          { $match : { username : req.session.username } },
+          { $lookup:
+             {
+               from: 'utilisateurs',
+               localField: 'ami',
+               foreignField: 'username',
+               as: 'infoami'
+             }
+           }
+          ]).toArray(function(err, data){
+            collection.aggregate([
+              { $match : { ami : req.session.username } },
+              { $lookup:
+                 {
+                   from: 'utilisateurs',
+                   localField: 'username',
+                   foreignField: 'username',
+                   as: 'demandeur'
+                 }
+               }
+            ]).toArray(function(err, demandeur){
+                res.render('amis', {data:data, demandeur:demandeur, usernamesession:req.session.username});
+            });
+          });
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
@@ -314,14 +332,19 @@ MongoClient.connect(URL, function(err, db) {
       var mesamis = [req.session.username]
       var collection = maDB.collection('utilisateurs');
       var amis = maDB.collection('amis');
-      amis.find({ username:req.session.username }).toArray(function(err, data){
+      amis.find({ ami:req.session.username }).toArray(function(err, data){
         data.forEach(function(element) {
-          mesamis.push(element.ami);
+          mesamis.push(element.username);
         });
-        collection.find({ username: { $nin:mesamis } }).toArray(function(err, data){
-            res.render('ajoutamis', {data:data});
+        amis.find({ username:req.session.username }).toArray(function(err, amidata){
+          amidata.forEach(function(element) {
+            mesamis.push(element.ami);
+          });
+          console.log(mesamis)
+          collection.find({ username: { $nin:mesamis } }).toArray(function(err, data){
+              res.render('ajoutamis', {data:data});
+          });
         });
-
       });
 
     }else{
@@ -329,6 +352,7 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  //Ajout Ami
   app.get('/ajoutamis/:username' ,function(req,res){
     var collection = maDB.collection('utilisateurs');
     var amis = maDB.collection('amis');
@@ -341,7 +365,7 @@ MongoClient.connect(URL, function(err, db) {
             to: data[0].email, // list of receivers
             subject: 'Un nouvel ami ?', // Subject line
             text: 'Bonjour '+ data[0].prenom +', L\'utilisateurs '+ req.params.username +' veut être votre amis sur Nofi' ,
-            html: 'Bonjour '+ data[0].prenom +',<br/> L\'utilisateurs'+ req.params.username +'veut être votre amis sur Nofi'
+            html: 'Bonjour '+ data[0].prenom +',<br/> L\'utilisateurs '+ req.params.username +' veut être votre amis sur Nofi'
         };
         // send mail with defined transport object
         transporter.sendMail(mailOptions, (error, info) => {
@@ -355,9 +379,29 @@ MongoClient.connect(URL, function(err, db) {
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
-
   });
 
+  //Valider un Ami
+  app.get('/validerami/:username' ,function(req,res){
+    var amis = maDB.collection('amis');
+    if(req.session.username){
+      amis.update({ami: req.params.username },{$set:{ status: 2} })
+      res.redirect('/ajoutamis');
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  //Ignorer un Ami
+  app.get('/ignorerami/:username' ,function(req,res){
+    var amis = maDB.collection('amis');
+    if(req.session.username){
+      amis.update({ami: req.params.username },{$set:{ status: 3} })
+      res.redirect('/ajoutamis');
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
   // POST /api/users gets JSON bodies
   app.post('/api/users', jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400)
