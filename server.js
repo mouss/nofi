@@ -33,8 +33,7 @@ const vueOptions = {
         end: '</div>'
     }
 };
-const expressVueMiddleware = expressVue.init(vueOptions);
-app.use(expressVueMiddleware);
+
 
 app.use("/pug", express.static(__dirname + '/pug'));
 app.set('view engine', 'pug')
@@ -385,8 +384,8 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/validerami/:username' ,function(req,res){
     var amis = maDB.collection('amis');
     if(req.session.username){
-      amis.update({ami: req.params.username },{$set:{ status: 2} })
-      res.redirect('/ajoutamis');
+      amis.updateOne({username: req.params.username, ami: req.session.username },{$set:{ status: 2} });
+      res.redirect('/listeamis');
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
@@ -396,8 +395,53 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/ignorerami/:username' ,function(req,res){
     var amis = maDB.collection('amis');
     if(req.session.username){
-      amis.update({ami: req.params.username },{$set:{ status: 3} })
-      res.redirect('/ajoutamis');
+      amis.updateOne({username: req.params.username, ami: req.session.username},{$set:{ status: 3} });
+      res.redirect('/listeamis');
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  //Liste pour recommander amis
+  app.get('/recommander' ,function(req,res){
+    if(req.session.username){
+      var amis = maDB.collection('amis');
+      amis.aggregate([
+          { $match : { username : req.session.username, status: 2 } },
+          { $lookup:
+             {
+               from: 'utilisateurs',
+               localField: 'ami',
+               foreignField: 'username',
+               as: 'infoami'
+             }
+           }
+          ]).toArray(function(err, data){
+            amis.aggregate([
+              { $match : { ami : req.session.username, status: 2 } },
+              { $lookup:
+                 {
+                   from: 'utilisateurs',
+                   localField: 'username',
+                   foreignField: 'username',
+                   as: 'demandeur'
+                 }
+               }
+            ]).toArray(function(err, demandeur){
+                res.json({data:data, demandeur:demandeur, usernamesession:req.session.username});
+            });
+          });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  //Ami recommander
+  app.get('/recommander/:datauser/:recommander' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('recommander');
+      collection.insert({recommandeur: req.session.username, amireceveur: req.params.datauser, amirecommander:req.params.recommander, status: 1})
+      res.redirect('/recommander')
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }

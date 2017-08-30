@@ -1,12 +1,10 @@
 // Page Content
 .grid-container.grid-container-padded#user
   .grid-x.grid-padding-x
-    .cell.small-3 cell
+    .cell.small-3
       include contentsidebar.pug
     .cell.small-9
       .people-you-might-know
-        h2.header-title
-          | Invitation en cours
         if data
           each ami in data
             if ami.status == 1
@@ -27,9 +25,9 @@
                     p Invitation en cours
             else if ami.status == 2
               .row.add-people-section.grid-x
-                .small-12.medium-12.columns.about-people.cell
+                .small-12.medium-6.columns.about-people.cell
                   .about-people-avatar
-                    if ami.photodeprofil
+                    if ami.infoami[0].photodeprofil
                       img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
                     else
                       img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
@@ -37,12 +35,21 @@
                     p.author-name= ami.infoami[0].username
                     p.author-location
                       i.fa.fa-map-marker(aria-hidden='true')
-                      span= ami.infoami[0].location
+                        span= ami.infoami[0].location
+                .small-12.medium-6.columns.add-friend
+                  .add-friend-action
+                    a(href= '/ignorerami/'+ami.infoami[0].username)
+                      button.button.alert.small
+                        i.fa.fa-user-times(aria-hidden='true')
+                        |           Supprimer de ma liste
+                  .add-friend-action
+                    a.recommander
+                      button.button.success.small(data-open='exampleModal1' data-user= ami.infoami[0].username) 
+                        i.fa.fa-user-plus(aria-hidden='true')
+                        |           Recommander un ami
         else
          p.label-notification Pas d'amis dans votre liste
       .people-you-might-know
-        h2.header-title
-          | En attente de confirmation
         if demandeur
           each ami in demandeur
             if ami.username != usernamesession
@@ -72,5 +79,35 @@
                         button.button.secondary.small
                           i.fa.fa-user-times(aria-hidden='true')
                           |           Ignorer
+              else if ami.status == 2
+                .row.add-people-section.grid-x
+                  .small-12.medium-6.columns.about-people.cell
+                    .about-people-avatar
+                      if ami.demandeur[0].photodeprofil
+                        img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
+                      else
+                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                    .about-people-author
+                      p.author-name= ami.demandeur[0].username
+                      p.author-location
+                        i.fa.fa-map-marker(aria-hidden='true')
+                        span= ami.demandeur[0].location
+                  .small-12.medium-6.columns.add-friend
+                    .add-friend-action
+                      a(href= '/ignorerami/'+ami.demandeur[0].username)
+                        button.button.secondary.small
+                          i.fa.fa-user-times(aria-hidden='true')
+                          |           Supprimer de ma liste
+                    .add-friend-action
+                      a.recommander
+                        button.button.success.small(data-open='exampleModal1', data-user= ami.demandeur[0].username) 
+                          i.fa.fa-user-plus(aria-hidden='true')
+                          |           Recommander un ami
         else
-         p.label-notification Pas d'amis dans votre liste
+         p.label-notification Pas d'amis dans votre liste 
+script(src='js/recommander.js')
+#exampleModal1.reveal(data-reveal='')
+ h1 Recommande des amis
+ .lead 
+ button.close-button(data-close='', aria-label='Close modal', type='button')
+   span(aria-hidden='true') ×

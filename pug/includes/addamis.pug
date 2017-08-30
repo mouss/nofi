@@ -1,7 +1,7 @@
 // Page Content
 .grid-container.grid-container-padded#user
   .grid-x.grid-padding-x
-    .cell.small-3 cell
+    .cell.small-3
       include contentsidebar.pug
     .cell.small-9
       .people-you-might-know
@@ -26,5 +26,5 @@
               .add-friend-action
                 a(href= '/ajoutamis/'+ami.username)
                   button.button.primary.small
-                    i.fa.fa-user-plus(aria-hidden='true')
+                    i.fa.fa-users(aria-hidden='true')
                     |           Ajouter un ami

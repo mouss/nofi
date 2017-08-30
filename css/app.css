@@ -384,3 +384,22 @@ img {
   text-decoration: underline;
 }
 /* AMI */
+.blogpost-footer-author-section{
+  display: flex;
+  justify-content:space-around;
+  align-items:center;
+  padding: 5px;
+  margin: 5px;
+}
+.avatar{
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  border: 0.0625rem solid #cacaca;
+}
+.author{
+  font-size: 12px;
+}
+.blogpost-footer-author-section a{
+  height: 50%;
+}
