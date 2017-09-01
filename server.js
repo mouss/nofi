@@ -296,6 +296,7 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/listeamis' ,function(req,res){
     if(req.session.username){
       var collection = maDB.collection('amis');
+      var recommander = maDB.collection('recommander');
       collection.aggregate([
           { $match : { username : req.session.username } },
           { $lookup:
@@ -318,7 +319,24 @@ MongoClient.connect(URL, function(err, db) {
                  }
                }
             ]).toArray(function(err, demandeur){
-                res.render('amis', {data:data, demandeur:demandeur, usernamesession:req.session.username});
+              recommander.aggregate([
+                { $match : { amireceveur : req.session.username } },
+                { $lookup:
+                   {
+                     from: 'utilisateurs',
+                     localField: 'amirecommander',
+                     foreignField: 'username',
+                     as: 'amirecommander'
+                   }
+                 }
+              ]).toArray(function(err, recommander){
+                res.render('amis', {
+                    data:data,
+                    demandeur:demandeur,
+                    usernamesession:req.session.username,
+                    recommander:recommander
+                  });
+              });
             });
           });
     }else{
@@ -441,7 +459,29 @@ MongoClient.connect(URL, function(err, db) {
     if(req.session.username){
       var collection = maDB.collection('recommander');
       collection.insert({recommandeur: req.session.username, amireceveur: req.params.datauser, amirecommander:req.params.recommander, status: 1})
-      res.redirect('/recommander')
+      res.redirect('/listeamis')
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  //Ignorer recommandation
+  app.get('/ignorerecommandation/:amirecommander' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('recommander');
+      collection.updateOne({amireceveur: req.session.username, amirecommander:req.params.amirecommander},{$set:{ status: 3} })
+      res.redirect('/listeamis')
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+  //Accepter recommandation
+  app.get('/accepterreco/:amirecommander' ,function(req,res){
+    if(req.session.username){
+      var collection = maDB.collection('recommander');
+      collection.updateOne({amireceveur: req.session.username, amirecommander:req.params.amirecommander},{$set:{ status: 2} })
+      res.redirect('/validerami/'+req.params.amirecommander)
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }

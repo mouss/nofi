@@ -105,6 +105,36 @@
                           |           Recommander un ami
         else
          p.label-notification Pas d'amis dans votre liste 
+      .people-you-might-know
+       if recommander
+         each ami in recommander
+           if ami.status == 1
+             .row.add-people-section.grid-x
+               .small-12.medium-4.columns.about-people.cell
+                 .about-people-avatar
+                   if ami.amirecommander[0].photodeprofil
+                     img.avatar-image(src= ami.amirecommander[0].photodeprofil.path, alt= ami.amirecommander[0].username)
+                   else
+                     img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                 .about-people-author
+                   p.author-name= ami.amirecommander[0].username
+                   p.author-location
+                     i.fa.fa-map-marker(aria-hidden='true')
+                     span= ami.amirecommander[0].location
+               .small-12.medium-4.columns.add-friend
+                 .label.success.small
+                   p Recommander par 
+                    span= ami.recommandeur
+               .small-12.medium-4.columns.add-friend
+                 a(href= '/accepterreco/'+ami.amirecommander[0].username)
+                   button.button.primary.small
+                     i.fa.fa-user-times(aria-hidden='true')
+                     |           Accepter recommandation
+                 a(href= '/ignorerecommandation/'+ami.amirecommander[0].username)
+                   button.button.secondary.small(data-open='exampleModal1', data-user= ami.amirecommander[0].username) 
+                     i.fa.fa-user-plus(aria-hidden='true')
+                     |           Ignorer
+             
 script(src='js/recommander.js')
 #exampleModal1.reveal(data-reveal='')
  h1 Recommande des amis
