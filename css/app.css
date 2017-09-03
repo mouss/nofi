@@ -403,3 +403,9 @@ img {
 .blogpost-footer-author-section a{
   height: 50%;
 }
+#log{
+  color: black;
+  font-size: 12px;
+  position: absolute;
+  top: 0;
+}

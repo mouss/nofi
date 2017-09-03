@@ -22,5 +22,8 @@
       });
 
     });
+    socket.on('accueil', function(data){
+      console.log(data);
+    });
   });
 })(window, io);

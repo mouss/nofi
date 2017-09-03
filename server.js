@@ -253,16 +253,16 @@ MongoClient.connect(URL, function(err, db) {
   });
 
   app.post('/search', function(req,res){
+    console.log(req.body.term);
     var collection = maDB.collection('utilisateurs');
     collection.createIndex({ "username": "text" })
-    collection.find({$text: { $search: req.body.search }}).toArray(function(err, data){
+    collection.find({$text: { $search: req.body.term }},{ presentation: 0, password: 0, _id: 0, photodeprofil: 0, location:0, niveau:0 }).toArray(function(err, data){
       if(data == ''){
-        console.log('puni')
-        res.render('accueil');
+        res.send({data});
+        console.log('non')
       }else{
-        console.log(data)
-        data.sort()
-        res.json({resu:data})
+        console.log(data[0])
+        res.send({data:data[0]})
       }
     });
   });
@@ -293,6 +293,7 @@ MongoClient.connect(URL, function(err, db) {
       res.redirect('/profil')
   });
 
+  //Recommander une listes d'amis
   app.get('/listeamis' ,function(req,res){
     if(req.session.username){
       var collection = maDB.collection('amis');
@@ -344,6 +345,7 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  // Ajouter un amis
   app.get('/ajoutamis' ,function(req,res){
     if(req.session.username){
       var mesamis = [req.session.username]
@@ -376,7 +378,6 @@ MongoClient.connect(URL, function(err, db) {
     if(req.session.username){
       amis.insert({username: req.session.username, ami: req.params.username, status: 1})
       collection.find({ username: req.params.username }).toArray(function(err, data){
-        console.log(data[0]);
         let mailOptions = {
             from: '"Nofi" <contact@nofi.com>', // sender address
             to: data[0].email, // list of receivers
@@ -458,7 +459,24 @@ MongoClient.connect(URL, function(err, db) {
   app.get('/recommander/:datauser/:recommander' ,function(req,res){
     if(req.session.username){
       var collection = maDB.collection('recommander');
+      var utilisateurs = maDB.collection('utilisateurs');
       collection.insert({recommandeur: req.session.username, amireceveur: req.params.datauser, amirecommander:req.params.recommander, status: 1})
+      utilisateurs.find({ username: req.params.datauser }).toArray(function(err, data){
+        let mailOptions = {
+            from: '"Nofi" <contact@nofi.com>', // sender address
+            to: data[0].email, // list of receivers
+            subject: 'Un nouvel ami ?', // Subject line
+            text: 'Bonjour '+ data[0].prenom +', Un utilisateurs vous à recommander un amis sur Nofi' ,
+            html: 'Bonjour '+ data[0].prenom +',<br/> Un utilisateurs vous à recommander un amis sur Nofi'
+        };
+        // send mail with defined transport object
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                return console.log(error);
+            }
+            console.log('Message %s sent: %s', info.messageId, info.response);
+        });
+      });
       res.redirect('/listeamis')
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});

@@ -22,10 +22,7 @@
           li
             a(href='/profil') Mon profil
       .top-bar-right
-        form(method="POST" action="/search")
-          ul.menu
-            li
-              input(type='search', name='search' id='search' placeholder='Search')
-            li
-              input(type='submit', class='button', value='Search')
-          .resultat
+        ul.menu
+          li
+            input(type='search', name='search' id='search' placeholder='Search')
+        #log
