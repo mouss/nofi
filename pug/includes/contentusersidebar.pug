@@ -1,0 +1,17 @@
+.card-user-container
+  // card's image
+  if user
+    each info in user
+      .card-user-avatar
+        if info.photodeprofil
+          img.user-image(src= '/'+info.photodeprofil.path)
+        else
+          img.user-image(src='http://placehold.it/200x200', alt='')
+      // user info name, bio and location
+      .card-user-bio
+        p= info.nom+', '+info.prenom
+        span.location
+          span.location-icon.fa.fa-map-marker
+          span.location-text= info.location
+      .card-user-button
+        a.hollow.button(href='#') Suivre

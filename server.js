@@ -504,6 +504,39 @@ MongoClient.connect(URL, function(err, db) {
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
   });
+
+  app.get('/user/:username' ,function(req,res){
+    var amis = maDB.collection('amis');
+    var collection = maDB.collection('posts');
+    var user = maDB.collection('utilisateurs')
+    if(req.session.username){
+      amis.find({ username: req.params.username, ami: req.session.username, status:2 }).toArray(function(err, data){
+        if(data == ''){
+          amis.find({ username: req.session.username, ami: req.params.username, status:2 }).toArray(function(err, data){
+            if(data ==''){
+              res.render('pasami')
+            }else{
+              collection.find({ username: req.params.username }).toArray(function(err, posts){
+                user.find({ username: req.params.username }).toArray(function(err, data){
+                  res.render('muruser',{posts:posts, user:data})
+                });
+              });
+            }
+          });
+        }else {
+          collection.find({ username: req.params.username }).toArray(function(err, posts){
+            user.find({ username: req.params.username }).toArray(function(err, data){
+              res.render('muruser',{posts:posts, user:data})
+            });
+          });
+        }
+      });
+
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
   // POST /api/users gets JSON bodies
   app.post('/api/users', jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400)

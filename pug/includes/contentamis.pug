@@ -10,16 +10,17 @@
             if ami.status == 1
               .row.add-people-section.grid-x
                 .small-12.medium-6.columns.about-people.cell
-                  .about-people-avatar
-                    if ami.infoami[0]
-                      img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
-                    else
-                      img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
-                  .about-people-author
-                    p.author-name= ami.infoami[0].username
-                    p.author-location
-                      i.fa.fa-map-marker(aria-hidden='true')
-                      span= ami.infoami[0].location
+                  a(href= '/user/'+ami.infoami[0].username)
+                    .about-people-avatar
+                      if ami.infoami[0]
+                        img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
+                      else
+                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                    .about-people-author
+                      p.author-name= ami.infoami[0].username
+                      p.author-location
+                        i.fa.fa-map-marker(aria-hidden='true')
+                        span= ami.infoami[0].location
                 .small-12.medium-6.columns.add-friend
                   .label.warning
                     p Invitation en cours
@@ -28,9 +29,11 @@
                 .small-12.medium-6.columns.about-people.cell
                   .about-people-avatar
                     if ami.infoami[0].photodeprofil
-                      img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
+                      a(href= '/user/'+ami.infoami[0].username)
+                        img.avatar-image(src= ami.infoami[0].photodeprofil.path, alt= ami.username)
                     else
-                      img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                      a(href= '/user/'+ami.infoami[0].username)
+                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
                   .about-people-author
                     p.author-name= ami.infoami[0].username
                     p.author-location

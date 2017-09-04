@@ -1,7 +1,7 @@
 .card-user-container
   // card's image
   .card-user-avatar(v-if='photodeprofil')
-    img.user-image(v-bind:src='photodeprofil.path')
+    img.user-image(v-bind:src="'/'+photodeprofil.path")
   .card-user-avatar(v-else)
     img.user-image(src='http://placehold.it/200x200', alt='')
   // user info name, bio and location
