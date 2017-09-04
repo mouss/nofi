@@ -256,13 +256,13 @@ MongoClient.connect(URL, function(err, db) {
     console.log(req.body.term);
     var collection = maDB.collection('utilisateurs');
     collection.createIndex({ "username": "text" })
-    collection.find({$text: { $search: req.body.term }},{ presentation: 0, password: 0, _id: 0, photodeprofil: 0, location:0, niveau:0 }).toArray(function(err, data){
+    collection.find({$text: { $search: req.body.term }},{ presentation: 0, password: 0, _id: 0, photodeprofil: 0, location:0, niveau:0 }).limit(5).toArray(function(err, data){
       if(data == ''){
-        res.send({data});
+        res.json({data});
         console.log('non')
       }else{
-        console.log(data[0])
-        res.send({data:data[0]})
+        console.log(data)
+        res.jsonp(data)
       }
     });
   });

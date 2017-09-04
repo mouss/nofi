@@ -2,13 +2,7 @@
 $( function() {
 
 
-  } );
-  function log( message ) {
-    $( "<div>" ).text( message ).prependTo( "#log" );
-    $( "#log" ).scrollTop( 0 );
-  }
-
-  var test= $( "#search" ).autocomplete({
+  $( "#search" ).autocomplete({
     source: function (request, response) {
       $.ajax( {
         url: "/search",
@@ -17,14 +11,23 @@ $( function() {
           term: request.term
         },
         success: function( data ) {
-          response( data );
-        }
-      } );
+          response($.map(data, function(item) {
+                        return {
+                            label: item.username,//text comes from a collection of mongo
+                            value: item.username
+                        };
+                    }));
+        },
+        error: function(xhr) {
+          alert(xhr.status + ' : ' + xhr.statusText);
+        },
+      });
     },
     minLength: 2,
     select: function( event, ui ) {
       console.log(event.username)
-      log(  ui.item );
-    },
-    appendTo:"#log"
+      //log(  ui.item.value );
+    }
   });
+
+  } );
