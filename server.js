@@ -69,11 +69,11 @@ MongoClient.connect(URL, function(err, db) {
 
   maDB = db;
 
-  // var port = process.env['PORT'] || 80;
+  app.set('port', (process.env.PORT || 5000));
 
   // Démarrage du serveur pour l'application principale express
-  var server = app.listen(8080, function() {
-    console.log( 'Server listening on port 8080 ');
+  var server = app.listen(app.get('port'), function() {
+    console.log( 'Server listening on port', app.get('port'));
   });
 
   //Upload Fichier
@@ -104,7 +104,7 @@ MongoClient.connect(URL, function(err, db) {
       } else if( bcrypt.compareSync(req.body.password, data[0].password)){
         req.session.username = data[0].username;
         userPseudo = data[0];
-        res.render('accueil',{data:data[0]});
+        res.render('accueil');
       }else {
         res.render('index', {reponse:'Mot de passe invalide'});
       }
@@ -278,6 +278,7 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  // Modifier profil
   app.post('/profil', upload.single('photodeprofil'),function(req,res){
       if (!req.body) return res.sendStatus(400)
       var collection = maDB.collection('utilisateurs');
@@ -505,6 +506,7 @@ MongoClient.connect(URL, function(err, db) {
     }
   });
 
+  // Mur user
   app.get('/user/:username' ,function(req,res){
     var amis = maDB.collection('amis');
     var collection = maDB.collection('posts');
@@ -531,6 +533,34 @@ MongoClient.connect(URL, function(err, db) {
           });
         }
       });
+
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
+
+
+  app.post('/postmur', upload.single('photodeprofil'),function(req,res){
+      if (!req.body) return res.sendStatus(400)
+      var collection = maDB.collection('posts');
+      var date = new Date()
+      date.toUTCString()
+      console.log(req.body)
+      collection.insert({ username:req.session.username, message:req.body.message, fichier:req.file, muruser:req.session.username, date: date });
+      res.json({data:'ok'})
+  });
+
+  // Mur Accueil en Ajax
+  app.get('/muruser' ,function(req,res){
+    var amis = maDB.collection('amis');
+    var collection = maDB.collection('posts');
+    var user = maDB.collection('utilisateurs')
+    if(req.session.username){
+
+      collection.find({ username: req.session.username }).toArray(function(err, posts){
+          res.json({posts})
+      });
+
 
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});

@@ -5,12 +5,12 @@
       include contentsidebar.pug
     .cell.small-6 
       .status-update-input-box
-        form
+        
           .row.input-box-container
             .columns
               label
                 // Add a Label here to give this input box a heading
-                textarea(rows='5', placeholder="Hey Harry, What's on your mind?")
+                textarea#message(rows='5', placeholder="Hey Harry, What's on your mind?", name="message")
           .row.medium-collapse.user-action-container
             .small-12.medium-7.columns
               .user-action-box
@@ -36,6 +36,8 @@
                     span.show-for-sr Tag a Friend
             .small-12.medium-5.columns
               .user-submit-box
-                input.button.small(type='submit', value='POST')
+                a#poster.button.small Post
+            .posts
 
     .cell.small-3 
+script(src='/js/mur.js')

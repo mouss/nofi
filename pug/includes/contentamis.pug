@@ -61,9 +61,11 @@
                   .small-12.medium-4.columns.about-people.cell
                     .about-people-avatar
                       if ami.demandeur[0].photodeprofil
-                        img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
+                        a(href= '/validerami/'+ami.demandeur[0].username)
+                          img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
                       else
-                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                        a(href= '/validerami/'+ami.demandeur[0].username)
+                          img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
                     .about-people-author
                       p.author-name= ami.demandeur[0].username
                       p.author-location
@@ -87,9 +89,11 @@
                   .small-12.medium-6.columns.about-people.cell
                     .about-people-avatar
                       if ami.demandeur[0].photodeprofil
-                        img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
+                        a(href= '/user/'+ami.demandeur[0].username)
+                          img.avatar-image(src= ami.demandeur[0].photodeprofil.path, alt= ami.username)
                       else
-                        img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
+                        a(href= '/user/'+ami.demandeur[0].username)
+                          img.avatar-image(src='https://i.imgur.com/UPVxPjb.jpg', alt= ami.username)
                     .about-people-author
                       p.author-name= ami.demandeur[0].username
                       p.author-location

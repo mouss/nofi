@@ -3,7 +3,7 @@
 
   window.addEventListener('DOMContentLoaded',function(){
 
-    var socket = io('http://127.0.0.1:8080/');
+    var socket = io('http://127.0.0.1:5000/');
     socket.emit('unEvenement', {
       message : 'new user'
     });
@@ -26,4 +26,13 @@
       console.log(data);
     });
   });
+  $("#poster").click(function(event) {
+      event.preventDefault();
+      var posting = $.post( '/postmur', {
+        message: $('#message').val()
+      });
+      posting.done(function( data ) {
+        console.log(data)
+      });
+    });
 })(window, io);
