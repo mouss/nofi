@@ -14,12 +14,20 @@ $(document).ready(function(){
       $.each( data.posts, function( index, value ) {
         console.log(value)
         $(".posts").prepend(
+          '<div class="card news-card">'+
             '<div class="card-section">'+
               '<div class="news-card-date">'+value.date+'</div>'+
                 '<article class="news-card-article">'+
                   '<p class="news-card-description">'+value.message+'</p>'+
                 '</article>'+
-            '</div>');
+            '</div>'+
+            '<div class="news-card-author">'+
+               '<div class="news-card-author-name">'+
+                 'By <a href="/user/'+value.muruser+'">'+value.muruser+'</a>'+
+               '</div>'+
+             '</div>'+
+            '</div>'
+          );
       });
     });
 

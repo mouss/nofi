@@ -4,7 +4,6 @@ $( document ).ready(function() {
   $.get( "/recommander", function( data) {
     console.log(data)
     if(data.data != ''){
-      console.log(1)
       $.each( data.data, function( index, value ) {
         $(document).on("click", ".button.success.small", function () {
            var dataUser = $(this).data('user');

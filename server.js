@@ -545,7 +545,7 @@ MongoClient.connect(URL, function(err, db) {
       var collection = maDB.collection('posts');
       var date = new Date();
       date.toUTCString()
-      collection.insert({ username:req.session.username, message:req.body.message, muruser:req.session.username, date: date });
+      collection.insert({ username:req.session.username, message:req.body.message, muruser:req.session.username, date: date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear() });
       res.json({data:'ok'})
   });
 
@@ -568,8 +568,7 @@ MongoClient.connect(URL, function(err, db) {
       if (!req.body) return res.sendStatus(400)
       var collection = maDB.collection('posts');
       var date = new Date();
-      date.toUTCString()
-      collection.insert({ username:req.params.username, message:req.body.message, muruser:req.session.username, date: date });
+      collection.insert({ username:req.params.username, message:req.body.message, muruser:req.session.username, date: date.getDate()+'/'+date.getMonth()+'/'+date.getFullYear() });
       res.json({data:'ok'})
   });
   // POST /api/users gets JSON bodies
