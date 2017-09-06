@@ -1,6 +1,8 @@
 
 $( function() {
-
+function location(pseudo){
+  $(window).attr('location','/user/'+pseudo)
+}
 
   $( "#search" ).autocomplete({
     source: function (request, response) {
@@ -25,8 +27,8 @@ $( function() {
     },
     minLength: 2,
     select: function( event, ui ) {
-      console.log(event.username)
-      //log(  ui.item.value );
+      console.log(ui.item.value)
+      location(  ui.item.value );
     }
   });
 

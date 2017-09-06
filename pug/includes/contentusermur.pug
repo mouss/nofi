@@ -10,32 +10,10 @@
             .columns
               label
                 // Add a Label here to give this input box a heading
-                textarea(rows='5', placeholder="Hey Harry, What's on your mind?")
+                textarea(rows='5', placeholder="Hey Harry, What's on your mind?", name='message')
           .row.medium-collapse.user-action-container
-            .small-12.medium-7.columns
-              .user-action-box
-                .action-area
-                  a.action-anchor.has-tip.bottom(href='#', data-tooltip='', aria-haspopup='true', data-disable-hover='false', tabindex='2', title='Upload a Photo')
-                    i.fa.fa-picture-o(aria-hidden='true')
-                    span.show-for-sr Upload a Photo
-                .action-area
-                  a.action-anchor.has-tip.bottom(href='#', data-tooltip='', aria-haspopup='true', data-disable-hover='false', tabindex='2', title='Upload a Video')
-                    i.fa.fa-video-camera(aria-hidden='true')
-                    span.show-for-sr Upload a Video
-                .action-area
-                  a.action-anchor.has-tip.bottom(href='#', data-tooltip='', aria-haspopup='true', data-disable-hover='false', tabindex='2', title='Check in')
-                    i.fa.fa-map-marker(aria-hidden='true')
-                    span.show-for-sr Check in
-                .action-area
-                  a.action-anchor.has-tip.bottom(href='#', data-tooltip='', aria-haspopup='true', data-disable-hover='false', tabindex='2', title='Add a Feeling')
-                    i.fa.fa-smile-o(aria-hidden='true')
-                    span.show-for-sr Add a Feeling
-                .action-area
-                  a.action-anchor.has-tip.bottom(href='#', data-tooltip='', aria-haspopup='true', data-disable-hover='false', tabindex='2', title='Tag a Friend')
-                    i.fa.fa-tags(aria-hidden='true')
-                    span.show-for-sr Tag a Friend
             .small-12.medium-5.columns
               .user-submit-box
-                input.button.small(type='submit', value='POST')
+                a#poster.button.small Post
 
     .cell.small-3 

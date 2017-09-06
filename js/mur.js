@@ -1,7 +1,7 @@
 "use strict";
 $(document).ready(function(){
 
-  $(document).on("click", "a#poster.button.small",function(event) {
+  $(document).on("submit", "a#poster.button.small",function(event) {
       var posting = $.post( '/postmur', {
         message: $('#message').val()
       });
@@ -13,16 +13,13 @@ $(document).ready(function(){
     $.get( "/muruser", function( data) {
       $.each( data.posts, function( index, value ) {
         console.log(value)
-        $(".posts").append(
-          '<div class="card news-card">'+
-              '<img src="https://i.imgur.com/6jMbuU1.jpg">'+
+        $(".posts").prepend(
             '<div class="card-section">'+
               '<div class="news-card-date">'+value.date+'</div>'+
                 '<article class="news-card-article">'+
                   '<p class="news-card-description">'+value.message+'</p>'+
                 '</article>'+
-            '</div>'+
-          '</div>');
+            '</div>');
       });
     });
 
