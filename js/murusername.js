@@ -1,8 +1,8 @@
 "use strict";
 $(document).ready(function(){
-
+var username = $(location).attr('pathname');
   $(document).on("click", "a#poster.button.small",function(event) {
-      var posting = $.post( '/postmur', {
+      var posting = $.post( '/postmur/'+username.split('/')[2], {
         message: $('#message').val()
       });
       posting.done(function( data ) {
@@ -10,20 +10,27 @@ $(document).ready(function(){
       });
   });
 
-    $.get( "/muruser", function( data) {
+
+    $.get( "/muruser/"+username.split('/')[2], function( data) {
       $.each( data.posts, function( index, value ) {
         console.log(value)
         $(".posts").prepend(
+          '<div class="card news-card">'+
             '<div class="card-section">'+
               '<div class="news-card-date">'+value.date+'</div>'+
                 '<article class="news-card-article">'+
                   '<p class="news-card-description">'+value.message+'</p>'+
                 '</article>'+
-            '</div>');
+            '</div>'+
+            '<div class="news-card-author">'+
+               '<div class="news-card-author-name">'+
+                 'By <a href="/user/'+value.muruser+'">'+value.muruser+'</a>'+
+               '</div>'+
+             '</div>'+
+            '</div>'
+          );
       });
     });
-
-
 });
 /*  <img src="https://i.imgur.com/6jMbuU1.jpg">
   <div class="card-section">

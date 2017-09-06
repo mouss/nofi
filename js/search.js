@@ -15,7 +15,7 @@ function location(pseudo){
         success: function( data ) {
           response($.map(data, function(item) {
                         return {
-                            label: item.username,//text comes from a collection of mongo
+                            label: item.username,
                             value: item.username
                         };
                     }));
@@ -27,7 +27,6 @@ function location(pseudo){
     },
     minLength: 2,
     select: function( event, ui ) {
-      console.log(ui.item.value)
       location(  ui.item.value );
     }
   });

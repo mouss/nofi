@@ -1,9 +1,3 @@
-/**
-  Le Serveur HTTP.
-  URL : http://[adresse IP/nom de domaine]:8888/
-  Ce serveur produit une réponse HTTP contenant un document
-  HTML suite à une requête HTTP provenant d'un client HTTP.
-**/
 
 // Chargement d'express
 var express = require('express');
@@ -518,35 +512,40 @@ MongoClient.connect(URL, function(err, db) {
             if(data ==''){
               res.render('pasami')
             }else{
-              collection.find({ username: req.params.username }).toArray(function(err, posts){
-                user.find({ username: req.params.username }).toArray(function(err, data){
-                  res.render('muruser',{posts:posts, user:data})
-                });
+              user.find({ username: req.params.username }).toArray(function(err, data){
+                res.render('muruser', {user:data})
               });
             }
           });
         }else {
-          collection.find({ username: req.params.username }).toArray(function(err, posts){
-            user.find({ username: req.params.username }).toArray(function(err, data){
-              res.render('muruser',{posts:posts, user:data})
-            });
+          user.find({ username: req.params.username }).toArray(function(err, data){
+            res.render('muruser', {user:data})
           });
         }
       });
-
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
   });
 
+  // Mur Accueil en Ajax
+  app.get('/muruser/:username' ,function(req,res){
+    var collection = maDB.collection('posts');
+    if(req.session.username){
+        collection.find({ username: req.params.username }).toArray(function(err, posts){
+            res.json({posts})
+        });
+    }else{
+      res.render('index', {reponse:'Veuillez vous connectez'});
+    }
+  });
 
   app.post('/postmur', upload.single('photodeprofil'),function(req,res){
       if (!req.body) return res.sendStatus(400)
       var collection = maDB.collection('posts');
-      var date = new Date()
+      var date = new Date();
       date.toUTCString()
-      console.log(req.body)
-      collection.insert({ username:req.session.username, message:req.body.message, fichier:req.file, muruser:req.session.username, date: date });
+      collection.insert({ username:req.session.username, message:req.body.message, muruser:req.session.username, date: date });
       res.json({data:'ok'})
   });
 
@@ -556,17 +555,23 @@ MongoClient.connect(URL, function(err, db) {
     var collection = maDB.collection('posts');
     var user = maDB.collection('utilisateurs')
     if(req.session.username){
-
-      collection.find({ username: req.session.username }).toArray(function(err, posts){
-          res.json({posts})
-      });
-
-
+        collection.find({ username: req.session.username }).toArray(function(err, posts){
+            res.json({posts})
+        });
     }else{
       res.render('index', {reponse:'Veuillez vous connectez'});
     }
   });
 
+  //Post mur user Ajax
+  app.post('/postmur/:username', upload.single('photodeprofil'),function(req,res){
+      if (!req.body) return res.sendStatus(400)
+      var collection = maDB.collection('posts');
+      var date = new Date();
+      date.toUTCString()
+      collection.insert({ username:req.params.username, message:req.body.message, muruser:req.session.username, date: date });
+      res.json({data:'ok'})
+  });
   // POST /api/users gets JSON bodies
   app.post('/api/users', jsonParser, function (req, res) {
     if (!req.body) return res.sendStatus(400)

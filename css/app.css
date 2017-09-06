@@ -447,24 +447,25 @@ img {
   color: #8a8a8a;
 }
 
-.news-card .card-section .news-card-author {
+.news-card-author {
   overflow: hidden;
-  padding-bottom: 1.6rem;
 }
 
-.news-card .card-section .news-card-author .news-card-author-image {
+.news-card-author-image {
   display: inline-block;
   vertical-align: middle;
 }
 
-.news-card .card-section .news-card-author .news-card-author-image img {
+.news-card-author-image img {
   border-radius: 50%;
   margin-right: 0.6em;
 }
 
-.news-card .card-section .news-card-author .news-card-author-name {
+.news-card-author-name {
   display: inline-block;
   vertical-align: middle;
+  padding: 1rem;
+  font-size: 12px;
 }
 .posts{
   margin: 10px;
